@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "pixelalbatross/slide",
+  "title": "Slide",
+  "category": "design",
+  "parent": [
+    "pixelalbatross/slider"
+  ],
+  "icon": "slides",
+  "description": "Display a slider.",
+  "keywords": [],
+  "textdomain": "slider-block",
+  "attributes": {
+    "hash": {
+      "type": "string",
+      "default": null
+    }
+  },
+  "usesContext": [
+    "pixelalbatross/slider/hashNavigation"
+  ],
+  "supports": {
+    "html": false,
+    "reusable": false,
+    "className": true,
+    "color": {
+      "background": true,
+      "gradients": true,
+      "heading": true,
+      "link": true,
+      "text": true
+    },
+    "spacing": {
+      "padding": false,
+      "margin": false
+    }
+  },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}
