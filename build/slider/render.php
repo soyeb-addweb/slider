@@ -98,14 +98,9 @@ if (! empty($attributes['thumbs'])) {
         <div class="swiper wp-block-pixelalbatross-slider__thumbs" <?php echo $thumb_style ? 'style="' . esc_attr($thumb_style) . '"' : ''; ?>>
             <div class="swiper-wrapper">
                 <?php
-                    // Render thumbnail slides from main content by extracting slide wrappers.
-                    // Remove text nodes/headings from thumbs to avoid overlay text.
-                    $thumbs_content = preg_replace(
-                        '/<div class="wp-block-pixelalbatross-slide__wrapper">([\s\S]*?)<\/div>/m',
-                        '<div class="swiper-slide"><div class="wp-block-pixelalbatross-slide__wrapper">$1</div></div>',
-                        wp_kses_post($content)
-                    );
-                    // Strip headings and paragraphs from thumbs; keep images and cover backgrounds.
+                    // Render thumbnail slides using the original slide markup (already contains .swiper-slide).
+                    // Then strip headings and paragraphs from thumbs; keep images and cover backgrounds.
+                    $thumbs_content = wp_kses_post($content);
                     $thumbs_content = preg_replace('/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>|<p[^>]*>[\s\S]*?<\/p>/mi', '', $thumbs_content);
                     echo $thumbs_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 ?>

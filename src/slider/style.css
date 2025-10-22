@@ -41,6 +41,23 @@
   overflow: hidden;
 }
 
+/* Ensure inner wrappers and covers fit the fixed thumbnail box */
+.wp-block-pixelalbatross-slider__thumbs .wp-block-pixelalbatross-slide__wrapper {
+  height: 100%;
+}
+.wp-block-pixelalbatross-slider__thumbs .wp-block-cover {
+  min-height: 100% !important;
+  height: 100% !important;
+  aspect-ratio: auto !important;
+}
+.wp-block-pixelalbatross-slider__thumbs .wp-block-group {
+  margin: 0;
+  padding: 0;
+}
+.wp-block-pixelalbatross-slider__thumbs .wp-block-cover__inner-container {
+  display: none;
+}
+
 .wp-block-pixelalbatross-slider__thumbs .swiper-slide-thumb-active,
 .wp-block-pixelalbatross-slider__thumbs .swiper-slide.swiper-slide-active {
   opacity: 1;
