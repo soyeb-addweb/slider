@@ -276,15 +276,25 @@ export function initSlider(container, options = {}) {
                 });
             }
 
-            // Apply fixed size via CSS variables if provided
+            // Sanitize and apply fixed size via CSS variables if provided
+            let hasFixedThumbWidth = false;
             if (options?.thumbs?.width) {
-                thumbsContainer.style.setProperty('--slider-thumb-width', options.thumbs.width);
+                const [parsedWidthQty, parsedWidthUnit] = parseQuantityAndUnitFromRawValue(options.thumbs.width);
+                if (typeof parsedWidthQty !== 'undefined') {
+                    const widthToApply = `${parsedWidthQty}${parsedWidthUnit || 'px'}`;
+                    thumbsContainer.style.setProperty('--slider-thumb-width', widthToApply);
+                    hasFixedThumbWidth = true;
+                }
             }
             if (options?.thumbs?.height) {
-                thumbsContainer.style.setProperty('--slider-thumb-height', options.thumbs.height);
+                const [parsedHeightQty, parsedHeightUnit] = parseQuantityAndUnitFromRawValue(options.thumbs.height);
+                if (typeof parsedHeightQty !== 'undefined') {
+                    const heightToApply = `${parsedHeightQty}${parsedHeightUnit || 'px'}`;
+                    thumbsContainer.style.setProperty('--slider-thumb-height', heightToApply);
+                }
             }
 
-            const slidesPerView = options?.thumbs?.width ? 'auto' : (options?.thumbs?.perView ?? 4);
+            const slidesPerView = hasFixedThumbWidth ? 'auto' : (options?.thumbs?.perView ?? 4);
             thumbsSwiper = new Swiper(thumbsContainer, {
                 modules: [FreeMode],
                 spaceBetween: options?.thumbs?.spaceBetween ?? 10,
