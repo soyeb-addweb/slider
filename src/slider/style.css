@@ -23,4 +23,19 @@
 		}
 	}
 }
+
+/* Thumbnails slider */
+.wp-block-pixelalbatross-slider__thumbs {
+  margin-top: 12px;
+}
+
+.wp-block-pixelalbatross-slider__thumbs .swiper-slide {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.wp-block-pixelalbatross-slider__thumbs .swiper-slide-thumb-active,
+.wp-block-pixelalbatross-slider__thumbs .swiper-slide.swiper-slide-active {
+  opacity: 1;
+}
 	

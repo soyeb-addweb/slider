@@ -38,10 +38,26 @@ $extra_attributes = [
 	'data-options' => wp_json_encode($options),
 ];
 
+// Prepare thumbnails options if enabled.
+if (! empty($attributes['thumbs'])) {
+    $thumbs_options = [
+        'el'            => '.wp-block-pixelalbatross-slider__thumbs',
+        'perView'       => isset($attributes['thumbsPerView']) ? (int) $attributes['thumbsPerView'] : 4,
+        'spaceBetween'  => isset($attributes['thumbsSpaceBetween']) ? (int) $attributes['thumbsSpaceBetween'] : 10,
+    ];
+
+    // Merge into options structure passed to JS.
+    $decoded = json_decode($extra_attributes['data-options'], true);
+    if (is_array($decoded)) {
+        $decoded['thumbs'] = $thumbs_options;
+        $extra_attributes['data-options'] = wp_json_encode($decoded);
+    }
+}
+
 ?>
 
 <div <?php echo get_block_wrapper_attributes($extra_attributes); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
-		?>>
+        ?>>
 
 	<div class="swiper-wrapper wp-block-pixelalbatross-slider__wrapper">
 		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
@@ -58,6 +74,23 @@ $extra_attributes = [
 
 	<?php if (! empty($attributes['pagination'])) : ?>
 		<div class="swiper-pagination wp-block-pixelalbatross-slider__pagination"></div>
+	<?php endif; ?>
+
+	<?php if (! empty($attributes['thumbs'])) : ?>
+		<div class="swiper wp-block-pixelalbatross-slider__thumbs">
+			<div class="swiper-wrapper">
+				<?php
+					// Render thumbnail slides from main content by extracting slide wrappers.
+					// We keep a simple structure: one thumb per slide with the same inner content wrapper.
+					// For safety, we only add minimal wrappers; styling can constrain size.
+					echo preg_replace(
+						'/<div class="wp-block-pixelalbatross-slide__wrapper">([\s\S]*?)<\/div>/m',
+						'<div class="swiper-slide"><div class="wp-block-pixelalbatross-slide__wrapper">$1</div></div>',
+						wp_kses_post($content)
+					); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
+			</div>
+		</div>
 	<?php endif; ?>
 
 </div>
