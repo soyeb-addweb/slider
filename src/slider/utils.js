@@ -45,37 +45,43 @@ export function parseQuantityAndUnitFromRawValue(rawValue) {
  * @return {Object} Returns initialized slider instance.
  */
 export function initSlider(container, options = {}) {
-	const parameters = {
-		modules: [A11y, Keyboard, EffectFade],
-		speed: options?.speed ?? 300,
-		loop: options?.loop ?? false,
-		rewind: options?.rewind ?? false,
-		autoHeight: options?.autoHeight ?? false,
-		slidesPerView: options?.perViewDesktop ?? 1,
-		centeredSlides: options?.centerSlides ?? false,
-		simulateTouch: options?.drag ?? true,
-		grabCursor: options?.drag ?? true,
-		focusableElements:
-			options?.focusableSelectors ?? 'input, select, option, textarea, button, video, label',
-		autoplay: false,
-		navigation: true,
-		pagination: false,
-		freeMode: false,
-		keyboard: true,
-		effect: 'fade',
-		fadeEffect: { crossFade: true },
-		a11y: {
-			containerRoleDescriptionMessage: 'carousel',
-			itemRoleDescriptionMessage: 'slide',
-			containerMessage: options?.ariaLabel ?? null,
-			firstSlideMessage: options?.i18n?.first ?? 'This is the first slide',
-			lastSlideMessage: options?.i18n?.last ?? 'This is the last slide',
-			nextSlideMessage: options?.i18n?.next ?? 'Next slide',
-			paginationBulletMessage: options?.i18n?.slideX ?? 'Go to slide {{index}}',
-			prevSlideMessage: options?.i18n?.prev ?? 'Previous slide',
-			slideLabelMessage: options?.i18n?.slideLabel ?? '{{index}} / {{slidesLength}}',
-		},
-	};
+    const parameters = {
+        modules: [A11y, Keyboard],
+        speed: options?.speed ?? 300,
+        loop: options?.loop ?? false,
+        rewind: options?.rewind ?? false,
+        autoHeight: options?.autoHeight ?? false,
+        slidesPerView: options?.perViewDesktop ?? 1,
+        centeredSlides: options?.centerSlides ?? false,
+        simulateTouch: options?.drag ?? true,
+        grabCursor: options?.drag ?? true,
+        focusableElements:
+            options?.focusableSelectors ?? 'input, select, option, textarea, button, video, label',
+        autoplay: false,
+        navigation: true,
+        pagination: false,
+        freeMode: false,
+        keyboard: true,
+        // Use slide effect by default; only enable fade when perView is 1
+        effect: (options?.perViewDesktop ?? 1) === 1 ? 'fade' : 'slide',
+        fadeEffect: { crossFade: true },
+        a11y: {
+            containerRoleDescriptionMessage: 'carousel',
+            itemRoleDescriptionMessage: 'slide',
+            containerMessage: options?.ariaLabel ?? null,
+            firstSlideMessage: options?.i18n?.first ?? 'This is the first slide',
+            lastSlideMessage: options?.i18n?.last ?? 'This is the last slide',
+            nextSlideMessage: options?.i18n?.next ?? 'Next slide',
+            paginationBulletMessage: options?.i18n?.slideX ?? 'Go to slide {{index}}',
+            prevSlideMessage: options?.i18n?.prev ?? 'Previous slide',
+            slideLabelMessage: options?.i18n?.slideLabel ?? '{{index}} / {{slidesLength}}',
+        },
+    };
+
+    // Ensure fade module is present when needed
+    if (parameters.effect === 'fade') {
+        parameters.modules.push(EffectFade);
+    }
 
 	// ✅ Timeline / Progress Bars
 	if (options?.timeline) {
@@ -252,7 +258,7 @@ export function initSlider(container, options = {}) {
 	/**
 	 * ✅ Thumbnail slider (preserved original code)
 	 */
-	let thumbsSwiper = null;
+    let thumbsSwiper = null;
     if (options?.thumbs && options?.thumbs.el) {
         parameters.modules.push(Thumbs);
         const parent = container.parentElement || container.closest('.wp-block-pixelalbatross-slider');
@@ -264,14 +270,25 @@ export function initSlider(container, options = {}) {
                 const thumbsWrapper = thumbsContainer.querySelector('.swiper-wrapper') || thumbsContainer;
                 mainSlides.forEach((slide) => {
                     const clone = slide.cloneNode(true);
+                    // Remove text blocks inside clone for thumbs cleanliness
+                    clone.querySelectorAll('h1,h2,h3,h4,h5,h6,p,.wp-block-buttons,.wp-block-quote,.wp-block-table,.wp-block-list').forEach((el) => el.remove());
                     thumbsWrapper.appendChild(clone);
                 });
             }
 
+            // Apply fixed size via CSS variables if provided
+            if (options?.thumbs?.width) {
+                thumbsContainer.style.setProperty('--slider-thumb-width', options.thumbs.width);
+            }
+            if (options?.thumbs?.height) {
+                thumbsContainer.style.setProperty('--slider-thumb-height', options.thumbs.height);
+            }
+
+            const slidesPerView = options?.thumbs?.width ? 'auto' : (options?.thumbs?.perView ?? 4);
             thumbsSwiper = new Swiper(thumbsContainer, {
                 modules: [FreeMode],
                 spaceBetween: options?.thumbs?.spaceBetween ?? 10,
-                slidesPerView: options?.thumbs?.perView ?? 4,
+                slidesPerView,
                 freeMode: true,
                 watchSlidesProgress: true,
             });

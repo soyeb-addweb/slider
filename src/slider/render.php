@@ -46,6 +46,14 @@ if (! empty($attributes['thumbs'])) {
         'spaceBetween'  => isset($attributes['thumbsSpaceBetween']) ? (int) $attributes['thumbsSpaceBetween'] : 10,
     ];
 
+    // Pass optional fixed width/height
+    if (! empty($attributes['thumbsWidth'])) {
+        $thumbs_options['width'] = $attributes['thumbsWidth'];
+    }
+    if (! empty($attributes['thumbsHeight'])) {
+        $thumbs_options['height'] = $attributes['thumbsHeight'];
+    }
+
     // Merge into options structure passed to JS.
     $decoded = json_decode($extra_attributes['data-options'], true);
     if (is_array($decoded)) {
@@ -76,21 +84,33 @@ if (! empty($attributes['thumbs'])) {
 		<div class="swiper-pagination wp-block-pixelalbatross-slider__pagination"></div>
 	<?php endif; ?>
 
-	<?php if (! empty($attributes['thumbs'])) : ?>
-		<div class="swiper wp-block-pixelalbatross-slider__thumbs">
-			<div class="swiper-wrapper">
-				<?php
-					// Render thumbnail slides from main content by extracting slide wrappers.
-					// We keep a simple structure: one thumb per slide with the same inner content wrapper.
-					// For safety, we only add minimal wrappers; styling can constrain size.
-					echo preg_replace(
-						'/<div class="wp-block-pixelalbatross-slide__wrapper">([\s\S]*?)<\/div>/m',
-						'<div class="swiper-slide"><div class="wp-block-pixelalbatross-slide__wrapper">$1</div></div>',
-						wp_kses_post($content)
-					); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				?>
-			</div>
-		</div>
-	<?php endif; ?>
+    <?php if (! empty($attributes['thumbs'])) : ?>
+        <?php
+            // Build inline style variables for thumbs sizing.
+            $thumb_style = '';
+            if (! empty($attributes['thumbsWidth'])) {
+                $thumb_style .= '--slider-thumb-width:' . esc_attr($attributes['thumbsWidth']) . ';';
+            }
+            if (! empty($attributes['thumbsHeight'])) {
+                $thumb_style .= '--slider-thumb-height:' . esc_attr($attributes['thumbsHeight']) . ';';
+            }
+        ?>
+        <div class="swiper wp-block-pixelalbatross-slider__thumbs" <?php echo $thumb_style ? 'style="' . esc_attr($thumb_style) . '"' : ''; ?>>
+            <div class="swiper-wrapper">
+                <?php
+                    // Render thumbnail slides from main content by extracting slide wrappers.
+                    // Remove text nodes/headings from thumbs to avoid overlay text.
+                    $thumbs_content = preg_replace(
+                        '/<div class="wp-block-pixelalbatross-slide__wrapper">([\s\S]*?)<\/div>/m',
+                        '<div class="swiper-slide"><div class="wp-block-pixelalbatross-slide__wrapper">$1</div></div>',
+                        wp_kses_post($content)
+                    );
+                    // Strip headings and paragraphs from thumbs; keep images and cover backgrounds.
+                    $thumbs_content = preg_replace('/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>|<p[^>]*>[\s\S]*?<\/p>/mi', '', $thumbs_content);
+                    echo $thumbs_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                ?>
+            </div>
+        </div>
+    <?php endif; ?>
 
 </div>

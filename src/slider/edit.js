@@ -96,21 +96,31 @@ const Slides = memo(() => {
  * Slider component.
  */
 const Slider = memo(({ clientId, attributes }) => {
-	const { navigation, pagination } = attributes;
+    const { navigation, pagination } = attributes;
 
     const sliderRef = useRefEffect((element) => {
-		const options = {
-			...attributes,
-			...{
-				autoplay: false,
-				drag: false,
-				focusableSelectors,
-				hashNavigation: false,
-				pagination: {
-					clickable: false,
-				},
-			},
-		};
+        // Build options for editor with safe defaults
+        const options = {
+            ...attributes,
+            autoplay: false,
+            drag: false,
+            focusableSelectors,
+            hashNavigation: false,
+            pagination: {
+                clickable: false,
+            },
+        };
+
+        // Provide thumbs configuration object in editor as well
+        if (attributes?.thumbs) {
+            options.thumbs = {
+                el: '.wp-block-pixelalbatross-slider__thumbs',
+                perView: attributes?.thumbsPerView,
+                spaceBetween: attributes?.thumbsSpaceBetween,
+                width: attributes?.thumbsWidth,
+                height: attributes?.thumbsHeight,
+            };
+        }
 
         // Initialize slider.
         let slider = initSlider(element, options);
@@ -234,6 +244,8 @@ export default function SliderEdit({ attributes, setAttributes }) {
 		thumbs,
 		thumbsPerView,
 		thumbsSpaceBetween,
+        thumbsWidth,
+        thumbsHeight,
 		width,
 		height,
 		spaceBetween,
@@ -319,6 +331,24 @@ export default function SliderEdit({ attributes, setAttributes }) {
 								step={1}
 							/>
 						</PanelRow>
+                        <PanelRow>
+                            <UnitControl
+                                label={__('Thumb Width', 'slider-block')}
+                                help={__('Override width of each thumbnail (e.g. 120px). Leave empty to use per-view.', 'slider-block')}
+                                value={thumbsWidth}
+                                onChange={(value) => setAttributes({ thumbsWidth: value })}
+                                units={[{ value: 'px', label: 'px' }]}
+                            />
+                        </PanelRow>
+                        <PanelRow>
+                            <UnitControl
+                                label={__('Thumb Height', 'slider-block')}
+                                help={__('Fixed height for thumbnails (e.g. 80px).', 'slider-block')}
+                                value={thumbsHeight}
+                                onChange={(value) => setAttributes({ thumbsHeight: value })}
+                                units={[{ value: 'px', label: 'px' }]}
+                            />
+                        </PanelRow>
 					</>
 				)}
 				<PanelRow>

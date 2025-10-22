@@ -104,6 +104,14 @@
       "type": "number",
       "default": 10
     },
+    "thumbsWidth": {
+      "type": "string",
+      "default": ""
+    },
+    "thumbsHeight": {
+      "type": "string",
+      "default": ""
+    },
     "width": {
       "type": "string",
       "default": ""
