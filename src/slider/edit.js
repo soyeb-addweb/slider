@@ -98,7 +98,7 @@ const Slides = memo(() => {
 const Slider = memo(({ clientId, attributes }) => {
 	const { navigation, pagination } = attributes;
 
-	const sliderRef = useRefEffect((element) => {
+    const sliderRef = useRefEffect((element) => {
 		const options = {
 			...attributes,
 			...{
@@ -112,8 +112,8 @@ const Slider = memo(({ clientId, attributes }) => {
 			},
 		};
 
-		// Initialize slider.
-		let slider = initSlider(element, options);
+        // Initialize slider.
+        let slider = initSlider(element, options);
 
 		// Store the current slide order to detect changes, such as adding, removing, or reordering slides.
 		let slideOrder = select(blockEditorStore).getBlockOrder(clientId);
@@ -128,15 +128,21 @@ const Slider = memo(({ clientId, attributes }) => {
 				const slideAdded = currentSlidesOrder.length > slideOrder.length;
 				const slideRemoved = currentSlidesOrder.length < slideOrder.length;
 				const slideMoved = currentSlidesOrder.length === slideOrder.length;
-				const activeIndex = slider.activeIndex;
+                const activeIndex = slider?.main?.activeIndex ?? 0;
 
 				// Store the current slide order before destroying the slider instance.
 				slideOrder = currentSlidesOrder;
-				slider.destroy();
+                // Destroy current instances before re-init
+                if (slider?.main) {
+                    slider.main.destroy();
+                }
+                if (slider?.thumbs) {
+                    slider.thumbs.destroy();
+                }
 
 				window.requestAnimationFrame(() => {
-					// Initialize slider.
-					slider = initSlider(element, options);
+                    // Initialize slider.
+                    slider = initSlider(element, options);
 
 					// Determine where the slider should go.
 					let slideToIndex = activeIndex;
@@ -154,14 +160,21 @@ const Slider = memo(({ clientId, attributes }) => {
 						slideToIndex = 0;
 					}
 
-					slider.slideTo(slideToIndex, 0);
+                    if (slider?.main) {
+                        slider.main.slideTo(slideToIndex, 0);
+                    }
 				});
 			}
 		});
 
 		return () => {
 			unsubscribeSliderUpdateListener();
-			slider.destroy();
+            if (slider?.main) {
+                slider.main.destroy();
+            }
+            if (slider?.thumbs) {
+                slider.thumbs.destroy();
+            }
 		};
 	});
 
