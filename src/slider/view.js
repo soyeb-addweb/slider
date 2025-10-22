@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		return;
 	}
 
-	containers.forEach((element) => {
+    containers.forEach((element) => {
 		let options = {};
 		try {
 			options = JSON.parse(element.dataset.options);
@@ -23,6 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		const slides = element.querySelectorAll('.wp-block-pixelalbatross-slide');
 		options.totalSlides = slides.length;
 
-		initSlider(element, options);
+        // If thumbs are enabled, ensure thumbs container exists and is empty (we'll clone main slides)
+        if (options?.thumbs?.el) {
+            const thumbsContainer = element.parentElement?.querySelector(options.thumbs.el) || element.querySelector(options.thumbs.el);
+            if (thumbsContainer) {
+                const wrapper = thumbsContainer.querySelector('.swiper-wrapper') || thumbsContainer;
+                // Clear any residual content from server render
+                wrapper.innerHTML = '';
+            }
+        }
+
+        initSlider(element, options);
 	});
 });

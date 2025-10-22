@@ -272,19 +272,59 @@ export function initSlider(container, options = {}) {
                     const clone = slide.cloneNode(true);
                     // Remove text blocks inside clone for thumbs cleanliness
                     clone.querySelectorAll('h1,h2,h3,h4,h5,h6,p,.wp-block-buttons,.wp-block-quote,.wp-block-table,.wp-block-list').forEach((el) => el.remove());
+                    // Normalize Gutenberg cover block inline styles that force large height
+                    clone.querySelectorAll('.wp-block-cover').forEach((cover) => {
+                        cover.style.minHeight = '0px';
+                        cover.style.height = '100%';
+                        cover.style.aspectRatio = '';
+                        // Remove inner container
+                        const inner = cover.querySelector('.wp-block-cover__inner-container');
+                        if (inner) {
+                            inner.remove();
+                        }
+                    });
+                    // Ensure images in thumbs behave
+                    clone.querySelectorAll('img').forEach((img) => {
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.loading = 'eager';
+                        img.decoding = 'async';
+                    });
                     thumbsWrapper.appendChild(clone);
                 });
             }
 
-            // Apply fixed size via CSS variables if provided
-            if (options?.thumbs?.width) {
-                thumbsContainer.style.setProperty('--slider-thumb-width', options.thumbs.width);
+            // Sanitize width/height values and apply
+            const [wQty, wUnit] = parseQuantityAndUnitFromRawValue(options?.thumbs?.width);
+            const [hQty, hUnit] = parseQuantityAndUnitFromRawValue(options?.thumbs?.height);
+            const widthCss = typeof wQty === 'number' ? `${wQty}${wUnit || 'px'}` : null;
+            const heightCss = typeof hQty === 'number' ? `${hQty}${hUnit || 'px'}` : null;
+
+            if (widthCss) {
+                thumbsContainer.style.setProperty('--slider-thumb-width', widthCss);
             }
-            if (options?.thumbs?.height) {
-                thumbsContainer.style.setProperty('--slider-thumb-height', options.thumbs.height);
+            if (heightCss) {
+                thumbsContainer.style.setProperty('--slider-thumb-height', heightCss);
             }
 
-            const slidesPerView = options?.thumbs?.width ? 'auto' : (options?.thumbs?.perView ?? 4);
+            // Explicitly set width/height on each slide to avoid KSES stripping CSS vars
+            const thumbSlides = thumbsContainer.querySelectorAll('.swiper-slide');
+            thumbSlides.forEach((slideEl) => {
+                if (widthCss) {
+                    slideEl.style.width = widthCss;
+                }
+                if (heightCss) {
+                    slideEl.style.height = heightCss;
+                }
+                // Ensure inner wrapper respects height
+                const inner = slideEl.querySelector('.wp-block-pixelalbatross-slide__wrapper');
+                if (inner && heightCss) {
+                    inner.style.height = '100%';
+                }
+            });
+
+            const slidesPerView = widthCss ? 'auto' : (options?.thumbs?.perView ?? 4);
             thumbsSwiper = new Swiper(thumbsContainer, {
                 modules: [FreeMode],
                 spaceBetween: options?.thumbs?.spaceBetween ?? 10,
