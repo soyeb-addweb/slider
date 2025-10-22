@@ -218,6 +218,9 @@ export default function SliderEdit({ attributes, setAttributes }) {
 		paginationType,
 		freeMode,
 		centerSlides,
+		thumbs,
+		thumbsPerView,
+		thumbsSpaceBetween,
 		width,
 		height,
 		spaceBetween,
@@ -238,6 +241,11 @@ export default function SliderEdit({ attributes, setAttributes }) {
 		<>
 			<div {...blockProps}>
 				<Slider clientId={clientId} attributes={attributes} />
+				{thumbs && (
+					<div className="swiper wp-block-pixelalbatross-slider__thumbs">
+						<div className="swiper-wrapper" />
+					</div>
+				)}
 			</div>
 
 			<InspectorControls>
@@ -269,6 +277,38 @@ export default function SliderEdit({ attributes, setAttributes }) {
 						</PanelRow>
 					
 					<PanelRow>
+					<ToggleControl
+						label={__('Thumbnails', 'slider-block')}
+						help={__('Enable thumbnail slider below the main slider.', 'slider-block')}
+						checked={thumbs}
+						onChange={(value) => setAttributes({ thumbs: value })}
+					/>
+				</PanelRow>
+				{thumbs && (
+					<>
+						<PanelRow>
+							<RangeControl
+								label={__('Thumbs Per View', 'slider-block')}
+								value={thumbsPerView}
+								onChange={(value) => setAttributes({ thumbsPerView: value })}
+								min={1}
+								max={10}
+								step={1}
+							/>
+						</PanelRow>
+						<PanelRow>
+							<RangeControl
+								label={__('Thumbs Space Between', 'slider-block')}
+								value={thumbsSpaceBetween}
+								onChange={(value) => setAttributes({ thumbsSpaceBetween: value })}
+								min={0}
+								max={40}
+								step={1}
+							/>
+						</PanelRow>
+					</>
+				)}
+				<PanelRow>
 						<ToggleControl
 							label={__('Loop', 'slider-block')}
 							help={__(

@@ -253,37 +253,34 @@ export function initSlider(container, options = {}) {
 	 * ✅ Thumbnail slider (preserved original code)
 	 */
 	let thumbsSwiper = null;
-	if (options?.thumbs && options?.thumbs.el) {
-		parameters.modules.push(Thumbs);
-		const thumbsContainer = document.querySelector(options.thumbs.el);
-		if (thumbsContainer) {
-			thumbsSwiper = new Swiper(thumbsContainer, {
-				modules: [FreeMode],
-				spaceBetween: options?.thumbs?.spaceBetween ?? 10,
-				slidesPerView: options?.thumbs?.perView ?? 4,
-				freeMode: true,
-				watchSlidesProgress: true,
-			});
-			parameters.thumbs = { swiper: thumbsSwiper };
-		}
-	}
+    if (options?.thumbs && options?.thumbs.el) {
+        parameters.modules.push(Thumbs);
+        const parent = container.parentElement || container.closest('.wp-block-pixelalbatross-slider');
+        const thumbsContainer = parent ? parent.querySelector(options.thumbs.el) : null;
+        if (thumbsContainer) {
+            // If thumbs container has no slides (e.g., in editor), clone from main slides.
+            if (!thumbsContainer.querySelector('.swiper-slide')) {
+                const mainSlides = container.querySelectorAll('.swiper-wrapper .swiper-slide');
+                const thumbsWrapper = thumbsContainer.querySelector('.swiper-wrapper') || thumbsContainer;
+                mainSlides.forEach((slide) => {
+                    const clone = slide.cloneNode(true);
+                    thumbsWrapper.appendChild(clone);
+                });
+            }
+
+            thumbsSwiper = new Swiper(thumbsContainer, {
+                modules: [FreeMode],
+                spaceBetween: options?.thumbs?.spaceBetween ?? 10,
+                slidesPerView: options?.thumbs?.perView ?? 4,
+                freeMode: true,
+                watchSlidesProgress: true,
+            });
+            parameters.thumbs = { swiper: thumbsSwiper };
+        }
+    }
 
 	// ✅ Initialize main Swiper
 	const swiperInstance = new Swiper(container, parameters);
- var swiper = new Swiper(".mySwiper", {
-      loop: true,
-      spaceBetween: 10,
-      slidesPerView: 4,
-      freeMode: true,
-      watchSlidesProgress: true,
-    });
-    var swiper2 = new Swiper(".mySwiper2", {
-      loop: true,
-      spaceBetween: 10,
-      thumbs: {
-        swiper: swiper,
-      },
-    });
 	return {
 		main: swiperInstance,
 		thumbs: thumbsSwiper,
