@@ -35,7 +35,7 @@ $timeline =  $attributes['timeline'] == true ? ' swiper-timeline' : '';
 
 $thumbsPosition = ! empty($attributes['thumbsPosition']) ? $attributes['thumbsPosition'] : (! empty($attributes['thumbs']) ? 'left' : 'bottom');
 $extra_attributes = [
-    'class'        => trim('swiper' . $timeline . ' ' . (! empty($attributes['thumbs']) ? 'has-thumbs thumbs-pos-' . esc_attr($thumbsPosition) : '')),
+    'class'        => trim(! empty($attributes['thumbs']) ? 'has-thumbs thumbs-pos-' . esc_attr($thumbsPosition) : ''),
     'data-options' => wp_json_encode($options),
 ];
 
@@ -71,10 +71,12 @@ if (! empty($attributes['thumbs'])) {
 <div <?php echo get_block_wrapper_attributes($extra_attributes); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
         ?>>
 
-	<div class="swiper-wrapper wp-block-pixelalbatross-slider__wrapper">
-		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
-		?>
-	</div>
+    <div class="swiper wp-block-pixelalbatross-slider__main<?php echo esc_attr($timeline); ?>">
+        <div class="swiper-wrapper wp-block-pixelalbatross-slider__wrapper">
+            <?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
+            ?>
+        </div>
+    </div>
 
 	<?php if (! empty($attributes['navigation'])) : ?>
 		<div class="swiper-button-next wp-block-pixelalbatross-slider__button-next"></div>
