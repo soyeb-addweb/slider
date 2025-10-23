@@ -300,7 +300,8 @@ export function initSlider(container, options = {}) {
             }
 
             // Sanitize width/height values and apply
-            const [wQty, wUnit] = parseQuantityAndUnitFromRawValue(options?.thumbs?.width);
+            const defaultWidthForVertical = '120px';
+            const [wQty, wUnit] = parseQuantityAndUnitFromRawValue(options?.thumbs?.width || (isVertical ? defaultWidthForVertical : undefined));
             const [hQty, hUnit] = parseQuantityAndUnitFromRawValue(options?.thumbs?.height);
             const widthCss = typeof wQty === 'number' ? `${wQty}${wUnit || 'px'}` : null;
             const heightCss = typeof hQty === 'number' ? `${hQty}${hUnit || 'px'}` : null;

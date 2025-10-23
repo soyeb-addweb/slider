@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const wrapper = thumbsContainer.querySelector('.swiper-wrapper') || thumbsContainer;
                 // Clear any residual content from server render
                 wrapper.innerHTML = '';
+                // Default width for left/right positions if not set
+                const position = options?.thumbsPosition || 'left';
+                if ((position === 'left' || position === 'right') && !options?.thumbs?.width) {
+                    thumbsContainer.style.setProperty('--slider-thumb-width', '120px');
+                }
             }
         }
 

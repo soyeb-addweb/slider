@@ -111,7 +111,7 @@
     },
     "thumbsWidth": {
       "type": "string",
-      "default": ""
+      "default": "120px"
     },
     "thumbsHeight": {
       "type": "string",
