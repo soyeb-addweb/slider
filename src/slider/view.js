@@ -33,6 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Propagate CSS class for position on frontend
+        if (options?.thumbsPosition) {
+            element.classList.add('has-thumbs');
+            element.classList.add(`thumbs-pos-${options.thumbsPosition}`);
+        }
+
         initSlider(element, options);
 	});
 });

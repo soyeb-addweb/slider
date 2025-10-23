@@ -244,6 +244,7 @@ export default function SliderEdit({ attributes, setAttributes }) {
 		thumbs,
 		thumbsPerView,
 		thumbsSpaceBetween,
+		thumbsPosition,
         thumbsWidth,
         thumbsHeight,
 		width,
@@ -252,7 +253,9 @@ export default function SliderEdit({ attributes, setAttributes }) {
 		ariaLabel,
 	} = attributes;
 	const { clientId } = useBlockEditContext();
-	const blockProps = useBlockProps();
+	const blockProps = useBlockProps({
+		className: `${thumbs ? 'has-thumbs' : ''} thumbs-pos-${thumbsPosition || 'bottom'}`,
+	});
 
 	const enableAutoHeight = applyFilters('pixelalbatross.sliderBlock.enableAutoHeight', false);
 	const minSpeed = applyFilters('pixelalbatross.sliderBlock.minSpeed', 100);
@@ -267,7 +270,7 @@ export default function SliderEdit({ attributes, setAttributes }) {
 			<div {...blockProps}>
 				<Slider clientId={clientId} attributes={attributes} />
 				{thumbs && (
-					<div className="swiper wp-block-pixelalbatross-slider__thumbs">
+					<div className={`swiper wp-block-pixelalbatross-slider__thumbs thumbs-pos-${thumbsPosition || 'bottom'}`}>
 						<div className="swiper-wrapper" />
 					</div>
 				)}
@@ -319,6 +322,19 @@ export default function SliderEdit({ attributes, setAttributes }) {
 								min={1}
 								max={10}
 								step={1}
+							/>
+						</PanelRow>
+						<PanelRow>
+							<SelectControl
+								label={__('Thumbs Position', 'slider-block')}
+								value={thumbsPosition}
+								onChange={(value) => setAttributes({ thumbsPosition: value })}
+								options={[
+									{ value: 'top', label: __('Top', 'slider-block') },
+									{ value: 'bottom', label: __('Bottom', 'slider-block') },
+									{ value: 'left', label: __('Left', 'slider-block') },
+									{ value: 'right', label: __('Right', 'slider-block') },
+								]}
 							/>
 						</PanelRow>
 						<PanelRow>

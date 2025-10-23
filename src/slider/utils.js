@@ -264,6 +264,10 @@ export function initSlider(container, options = {}) {
         const parent = container.parentElement || container.closest('.wp-block-pixelalbatross-slider');
         const thumbsContainer = parent ? parent.querySelector(options.thumbs.el) : null;
         if (thumbsContainer) {
+            // Determine orientation
+            const position = options?.thumbsPosition || (parent?.classList?.contains('thumbs-pos-left') || parent?.classList?.contains('thumbs-pos-right') ? 'left' : 'bottom');
+            const isVertical = position === 'left' || position === 'right';
+
             // If thumbs container has no slides (e.g., in editor), clone from main slides.
             if (!thumbsContainer.querySelector('.swiper-slide')) {
                 const mainSlides = container.querySelectorAll('.swiper-wrapper .swiper-slide');
@@ -331,6 +335,7 @@ export function initSlider(container, options = {}) {
                 slidesPerView,
                 freeMode: true,
                 watchSlidesProgress: true,
+                direction: isVertical ? 'vertical' : 'horizontal',
             });
             parameters.thumbs = { swiper: thumbsSwiper };
         }

@@ -33,9 +33,10 @@ $options = apply_filters('pixelalbatross_slider_block_slider_options', $options)
 $options = array_filter($options);
 $timeline =  $attributes['timeline'] == true ? ' swiper-timeline' : '';
 
+$thumbsPosition = ! empty($attributes['thumbsPosition']) ? $attributes['thumbsPosition'] : 'bottom';
 $extra_attributes = [
-	'class'        => 'swiper' . $timeline,
-	'data-options' => wp_json_encode($options),
+    'class'        => trim('swiper' . $timeline . ' ' . (! empty($attributes['thumbs']) ? 'has-thumbs thumbs-pos-' . esc_attr($thumbsPosition) : '')),
+    'data-options' => wp_json_encode($options),
 ];
 
 // Prepare thumbnails options if enabled.
@@ -58,6 +59,9 @@ if (! empty($attributes['thumbs'])) {
     $decoded = json_decode($extra_attributes['data-options'], true);
     if (is_array($decoded)) {
         $decoded['thumbs'] = $thumbs_options;
+        if (! empty($attributes['thumbsPosition'])) {
+            $decoded['thumbsPosition'] = $attributes['thumbsPosition'];
+        }
         $extra_attributes['data-options'] = wp_json_encode($decoded);
     }
 }
