@@ -33,9 +33,10 @@ $options = apply_filters('pixelalbatross_slider_block_slider_options', $options)
 $options = array_filter($options);
 $timeline =  $attributes['timeline'] == true ? ' swiper-timeline' : '';
 
+$thumbsPosition = ! empty($attributes['thumbsPosition']) ? $attributes['thumbsPosition'] : (! empty($attributes['thumbs']) ? 'left' : 'bottom');
 $extra_attributes = [
-	'class'        => 'swiper' . $timeline,
-	'data-options' => wp_json_encode($options),
+    'class'        => trim('swiper' . $timeline . ' ' . (! empty($attributes['thumbs']) ? 'has-thumbs thumbs-pos-' . esc_attr($thumbsPosition) : '')),
+    'data-options' => wp_json_encode($options),
 ];
 
 // Prepare thumbnails options if enabled.
@@ -58,6 +59,9 @@ if (! empty($attributes['thumbs'])) {
     $decoded = json_decode($extra_attributes['data-options'], true);
     if (is_array($decoded)) {
         $decoded['thumbs'] = $thumbs_options;
+        if (! empty($attributes['thumbsPosition'])) {
+            $decoded['thumbsPosition'] = $attributes['thumbsPosition'];
+        }
         $extra_attributes['data-options'] = wp_json_encode($decoded);
     }
 }
@@ -85,26 +89,8 @@ if (! empty($attributes['thumbs'])) {
 	<?php endif; ?>
 
     <?php if (! empty($attributes['thumbs'])) : ?>
-        <?php
-            // Build inline style variables for thumbs sizing.
-            $thumb_style = '';
-            if (! empty($attributes['thumbsWidth'])) {
-                $thumb_style .= '--slider-thumb-width:' . esc_attr($attributes['thumbsWidth']) . ';';
-            }
-            if (! empty($attributes['thumbsHeight'])) {
-                $thumb_style .= '--slider-thumb-height:' . esc_attr($attributes['thumbsHeight']) . ';';
-            }
-        ?>
-        <div class="swiper wp-block-pixelalbatross-slider__thumbs" <?php echo $thumb_style ? 'style="' . esc_attr($thumb_style) . '"' : ''; ?>>
-            <div class="swiper-wrapper">
-                <?php
-                    // Render thumbnail slides using the original slide markup (already contains .swiper-slide).
-                    // Then strip headings and paragraphs from thumbs; keep images and cover backgrounds.
-                    $thumbs_content = wp_kses_post($content);
-                    $thumbs_content = preg_replace('/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>|<p[^>]*>[\s\S]*?<\/p>/mi', '', $thumbs_content);
-                    echo $thumbs_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                ?>
-            </div>
+        <div class="swiper wp-block-pixelalbatross-slider__thumbs">
+            <div class="swiper-wrapper"></div>
         </div>
     <?php endif; ?>
 

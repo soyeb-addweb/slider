@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		return;
 	}
 
-	containers.forEach((element) => {
+    containers.forEach((element) => {
 		let options = {};
 		try {
 			options = JSON.parse(element.dataset.options);
@@ -23,6 +23,29 @@ document.addEventListener('DOMContentLoaded', () => {
 		const slides = element.querySelectorAll('.wp-block-pixelalbatross-slide');
 		options.totalSlides = slides.length;
 
-		initSlider(element, options);
+        // If thumbs are enabled, ensure thumbs container exists and is empty (we'll clone main slides)
+        if (options?.thumbs?.el) {
+            const thumbsContainer = element.parentElement?.querySelector(options.thumbs.el) || element.querySelector(options.thumbs.el);
+            if (thumbsContainer) {
+                const wrapper = thumbsContainer.querySelector('.swiper-wrapper') || thumbsContainer;
+                // Clear any residual content from server render
+                wrapper.innerHTML = '';
+                // Default width for left/right positions if not set
+                const position = options?.thumbsPosition || 'left';
+                if ((position === 'left' || position === 'right') && !options?.thumbs?.width) {
+                    thumbsContainer.style.setProperty('--slider-thumb-width', '120px');
+                }
+            }
+        }
+
+        // Propagate CSS class for position on frontend
+        // Apply default left position if thumbs enabled but no position provided
+        const position = options?.thumbsPosition || (options?.thumbs ? 'left' : null);
+        if (position) {
+            element.classList.add('has-thumbs');
+            element.classList.add(`thumbs-pos-${position}`);
+        }
+
+        initSlider(element, options);
 	});
 });

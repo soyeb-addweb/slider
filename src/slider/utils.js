@@ -264,6 +264,10 @@ export function initSlider(container, options = {}) {
         const parent = container.parentElement || container.closest('.wp-block-pixelalbatross-slider');
         const thumbsContainer = parent ? parent.querySelector(options.thumbs.el) : null;
         if (thumbsContainer) {
+            // Determine orientation
+            const position = options?.thumbsPosition || (parent?.classList?.contains('thumbs-pos-left') || parent?.classList?.contains('thumbs-pos-right') ? 'left' : 'bottom');
+            const isVertical = position === 'left' || position === 'right';
+
             // If thumbs container has no slides (e.g., in editor), clone from main slides.
             if (!thumbsContainer.querySelector('.swiper-slide')) {
                 const mainSlides = container.querySelectorAll('.swiper-wrapper .swiper-slide');
@@ -272,35 +276,67 @@ export function initSlider(container, options = {}) {
                     const clone = slide.cloneNode(true);
                     // Remove text blocks inside clone for thumbs cleanliness
                     clone.querySelectorAll('h1,h2,h3,h4,h5,h6,p,.wp-block-buttons,.wp-block-quote,.wp-block-table,.wp-block-list').forEach((el) => el.remove());
+                    // Normalize Gutenberg cover block inline styles that force large height
+                    clone.querySelectorAll('.wp-block-cover').forEach((cover) => {
+                        cover.style.minHeight = '0px';
+                        cover.style.height = '100%';
+                        cover.style.aspectRatio = '';
+                        // Remove inner container
+                        const inner = cover.querySelector('.wp-block-cover__inner-container');
+                        if (inner) {
+                            inner.remove();
+                        }
+                    });
+                    // Ensure images in thumbs behave
+                    clone.querySelectorAll('img').forEach((img) => {
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.loading = 'eager';
+                        img.decoding = 'async';
+                    });
                     thumbsWrapper.appendChild(clone);
                 });
             }
 
-            // Sanitize and apply fixed size via CSS variables if provided
-            let hasFixedThumbWidth = false;
-            if (options?.thumbs?.width) {
-                const [parsedWidthQty, parsedWidthUnit] = parseQuantityAndUnitFromRawValue(options.thumbs.width);
-                if (typeof parsedWidthQty !== 'undefined') {
-                    const widthToApply = `${parsedWidthQty}${parsedWidthUnit || 'px'}`;
-                    thumbsContainer.style.setProperty('--slider-thumb-width', widthToApply);
-                    hasFixedThumbWidth = true;
-                }
+            // Sanitize width/height values and apply
+            const defaultWidthForVertical = '120px';
+            const [wQty, wUnit] = parseQuantityAndUnitFromRawValue(options?.thumbs?.width || (isVertical ? defaultWidthForVertical : undefined));
+            const [hQty, hUnit] = parseQuantityAndUnitFromRawValue(options?.thumbs?.height);
+            const widthCss = typeof wQty === 'number' ? `${wQty}${wUnit || 'px'}` : null;
+            const heightCss = typeof hQty === 'number' ? `${hQty}${hUnit || 'px'}` : null;
+
+            if (widthCss) {
+                thumbsContainer.style.setProperty('--slider-thumb-width', widthCss);
             }
-            if (options?.thumbs?.height) {
-                const [parsedHeightQty, parsedHeightUnit] = parseQuantityAndUnitFromRawValue(options.thumbs.height);
-                if (typeof parsedHeightQty !== 'undefined') {
-                    const heightToApply = `${parsedHeightQty}${parsedHeightUnit || 'px'}`;
-                    thumbsContainer.style.setProperty('--slider-thumb-height', heightToApply);
-                }
+            if (heightCss) {
+                thumbsContainer.style.setProperty('--slider-thumb-height', heightCss);
             }
 
-            const slidesPerView = hasFixedThumbWidth ? 'auto' : (options?.thumbs?.perView ?? 4);
+            // Explicitly set width/height on each slide to avoid KSES stripping CSS vars
+            const thumbSlides = thumbsContainer.querySelectorAll('.swiper-slide');
+            thumbSlides.forEach((slideEl) => {
+                if (widthCss) {
+                    slideEl.style.width = widthCss;
+                }
+                if (heightCss) {
+                    slideEl.style.height = heightCss;
+                }
+                // Ensure inner wrapper respects height
+                const inner = slideEl.querySelector('.wp-block-pixelalbatross-slide__wrapper');
+                if (inner && heightCss) {
+                    inner.style.height = '100%';
+                }
+            });
+
+            const slidesPerView = widthCss ? 'auto' : (options?.thumbs?.perView ?? 4);
             thumbsSwiper = new Swiper(thumbsContainer, {
                 modules: [FreeMode],
                 spaceBetween: options?.thumbs?.spaceBetween ?? 10,
                 slidesPerView,
                 freeMode: true,
                 watchSlidesProgress: true,
+                direction: isVertical ? 'vertical' : 'horizontal',
             });
             parameters.thumbs = { swiper: thumbsSwiper };
         }
