@@ -343,7 +343,9 @@ export function initSlider(container, options = {}) {
     }
 
 	// ✅ Initialize main Swiper
-    const swiperInstance = new Swiper(container, parameters);
+    // If a dedicated main container exists, prefer that
+    const mainContainer = container.querySelector?.('.wp-block-pixelalbatross-slider__main') || container;
+    const swiperInstance = new Swiper(mainContainer, parameters);
     // Link thumbs to main if present
     if (thumbsSwiper && swiperInstance && swiperInstance.params && swiperInstance.params.thumbs) {
         swiperInstance.thumbs.swiper = thumbsSwiper;

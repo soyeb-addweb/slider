@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // If thumbs are enabled, ensure thumbs container exists and is empty (we'll clone main slides)
         if (options?.thumbs?.el) {
-            const thumbsContainer = element.parentElement?.querySelector(options.thumbs.el) || element.querySelector(options.thumbs.el);
+            const thumbsContainer = element.querySelector(options.thumbs.el) || element.parentElement?.querySelector(options.thumbs.el);
             if (thumbsContainer) {
                 const wrapper = thumbsContainer.querySelector('.swiper-wrapper') || thumbsContainer;
                 // Clear any residual content from server render
@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     thumbsContainer.style.setProperty('--slider-thumb-width', '120px');
                 }
                 // Ensure thumbs container is visible
-                thumbsContainer.style.display = '';
+                thumbsContainer.style.removeProperty('display');
+                thumbsContainer.classList.remove('is-hidden');
             }
         }
 
