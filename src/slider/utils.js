@@ -343,7 +343,13 @@ export function initSlider(container, options = {}) {
     }
 
 	// ✅ Initialize main Swiper
-	const swiperInstance = new Swiper(container, parameters);
+    const swiperInstance = new Swiper(container, parameters);
+    // Link thumbs to main if present
+    if (thumbsSwiper && swiperInstance && swiperInstance.params && swiperInstance.params.thumbs) {
+        swiperInstance.thumbs.swiper = thumbsSwiper;
+        swiperInstance.thumbs.init();
+        swiperInstance.thumbs.update();
+    }
 	return {
 		main: swiperInstance,
 		thumbs: thumbsSwiper,

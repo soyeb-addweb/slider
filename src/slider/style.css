@@ -48,26 +48,30 @@
   display: flex;
   gap: 12px;
 }
-.has-thumbs.thumbs-pos-left > .wp-block-pixelalbatross-slider__thumbs { width: auto; }
-.has-thumbs.thumbs-pos-left > .swiper { flex: 1 1 auto; }
+.has-thumbs.thumbs-pos-left > .wp-block-pixelalbatross-slider__thumbs { order: 0; width: auto; }
+.has-thumbs.thumbs-pos-left > .swiper:not(.wp-block-pixelalbatross-slider__thumbs) { order: 1; flex: 1 1 auto; }
 
 .has-thumbs.thumbs-pos-right {
   display: flex;
   gap: 12px;
 }
 .has-thumbs.thumbs-pos-right > .wp-block-pixelalbatross-slider__thumbs { order: 1; width: auto; }
-.has-thumbs.thumbs-pos-right > .swiper { order: 0; flex: 1 1 auto; }
+.has-thumbs.thumbs-pos-right > .swiper:not(.wp-block-pixelalbatross-slider__thumbs) { order: 0; flex: 1 1 auto; }
 
 .wp-block-pixelalbatross-slider__thumbs .swiper-slide {
   opacity: 0.6;
   cursor: pointer;
-  /* Respect custom size if provided via CSS variables */
-  width: var(--slider-thumb-width, auto);
-  height: var(--slider-thumb-height, auto);
+  /* Default sizes with CSS variables override */
+  height: var(--slider-thumb-height, 80px);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+/* For vertical thumbs, provide a default width */
+.thumbs-pos-left .wp-block-pixelalbatross-slider__thumbs .swiper-slide,
+.thumbs-pos-right .wp-block-pixelalbatross-slider__thumbs .swiper-slide {
+  width: var(--slider-thumb-width, 120px);
 }
 
 /* Ensure inner wrappers and covers fit the fixed thumbnail box */
@@ -95,7 +99,7 @@
 /* Vertical thumbs (left/right) force vertical swiper */
 .thumbs-pos-left .wp-block-pixelalbatross-slider__thumbs,
 .thumbs-pos-right .wp-block-pixelalbatross-slider__thumbs {
-  height: 100%;
+  /* Let content define height; slides have explicit height */
 }
 
 /* Ensure images inside thumbs cover container and remove text */

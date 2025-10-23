@@ -4,7 +4,7 @@
 import { initSlider } from './utils';
 
 document.addEventListener('DOMContentLoaded', () => {
-	const containers = document.querySelectorAll('.wp-block-pixelalbatross-slider');
+    const containers = document.querySelectorAll('.wp-block-pixelalbatross-slider');
 
 	if (!containers.length) {
 		return;
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			return;
 		}
 
-		const slides = element.querySelectorAll('.wp-block-pixelalbatross-slide');
+        const slides = element.querySelectorAll('.wp-block-pixelalbatross-slide');
 		options.totalSlides = slides.length;
 
         // If thumbs are enabled, ensure thumbs container exists and is empty (we'll clone main slides)
@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if ((position === 'left' || position === 'right') && !options?.thumbs?.width) {
                     thumbsContainer.style.setProperty('--slider-thumb-width', '120px');
                 }
+                // Ensure thumbs container is visible
+                thumbsContainer.style.display = '';
             }
         }
 

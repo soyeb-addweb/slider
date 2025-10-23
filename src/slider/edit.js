@@ -194,7 +194,7 @@ const Slider = memo(({ clientId, attributes }) => {
 				<SliderToolbar clientId={clientId} />
 			</BlockControls>
 
-			<div className="swiper" ref={sliderRef}>
+			<div className="swiper wp-block-pixelalbatross-slider__main" ref={sliderRef}>
 				<Slides />
 				{navigation && (
 					<>
