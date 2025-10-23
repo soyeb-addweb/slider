@@ -104,6 +104,11 @@
       "type": "number",
       "default": 10
     },
+    "thumbsPosition": {
+      "type": "string",
+      "enum": ["top", "bottom", "left", "right"],
+      "default": "bottom"
+    },
     "thumbsWidth": {
       "type": "string",
       "default": ""
