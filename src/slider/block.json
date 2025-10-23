@@ -107,7 +107,7 @@
     "thumbsPosition": {
       "type": "string",
       "enum": ["top", "bottom", "left", "right"],
-      "default": "bottom"
+      "default": "left"
     },
     "thumbsWidth": {
       "type": "string",

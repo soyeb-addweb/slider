@@ -34,9 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Propagate CSS class for position on frontend
-        if (options?.thumbsPosition) {
+        // Apply default left position if thumbs enabled but no position provided
+        const position = options?.thumbsPosition || (options?.thumbs ? 'left' : null);
+        if (position) {
             element.classList.add('has-thumbs');
-            element.classList.add(`thumbs-pos-${options.thumbsPosition}`);
+            element.classList.add(`thumbs-pos-${position}`);
         }
 
         initSlider(element, options);

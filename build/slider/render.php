@@ -33,7 +33,7 @@ $options = apply_filters('pixelalbatross_slider_block_slider_options', $options)
 $options = array_filter($options);
 $timeline =  $attributes['timeline'] == true ? ' swiper-timeline' : '';
 
-$thumbsPosition = ! empty($attributes['thumbsPosition']) ? $attributes['thumbsPosition'] : 'bottom';
+$thumbsPosition = ! empty($attributes['thumbsPosition']) ? $attributes['thumbsPosition'] : (! empty($attributes['thumbs']) ? 'left' : 'bottom');
 $extra_attributes = [
     'class'        => trim('swiper' . $timeline . ' ' . (! empty($attributes['thumbs']) ? 'has-thumbs thumbs-pos-' . esc_attr($thumbsPosition) : '')),
     'data-options' => wp_json_encode($options),

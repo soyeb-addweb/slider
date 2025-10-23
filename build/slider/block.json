@@ -112,7 +112,7 @@
         "left",
         "right"
       ],
-      "default": "bottom"
+      "default": "left"
     },
     "thumbsWidth": {
       "type": "string",
